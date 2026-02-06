@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: collab
+      POSTGRES_PASSWORD: collab
+      POSTGRES_DB: collabdocs
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U collab -d collabdocs"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    image: migrate/migrate:v4.17.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./internal/infrastructure/db/migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://collab:collab@postgres:5432/collabdocs?sslmode=disable", "up"]
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      APP_PORT: 8080
+      DB_DSN: postgres://collab:collab@postgres:5432/collabdocs?sslmode=disable
+      CORS_ORIGINS: http://localhost:5173
+      LOG_LEVEL: info
+      WS_MAX_BIN_BYTES: 1048576
+      WS_MAX_TEXT_BYTES: 65536
+    ports:
+      - "8080:8080"
