@@ -1,0 +1,32 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Global smooth scrolling and polish */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar styling for a more polished look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
